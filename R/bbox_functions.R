@@ -1,3 +1,40 @@
+
+#' Crop sf
+#'
+#' crop an sf geometry object to a desired shape.
+#'
+#' @param data
+#' @param n_vertices
+#' @param bbox a POLYGON from create_boundary_shape.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+crop_sf <- function(data, n_vertices=4,bbox) {
+
+  if (n_vertices %% 4){
+    stop("n_vertices must be a multiple of 4.")
+  } else if (n_vertices < 4) {
+    stop("n_vertices must be greater than 3.")
+  }
+
+  n_vertices <- as.integer(n_vertices)
+
+  boundary <- sf::st_bbox(bbox)
+
+  # find xmin,max,ymin,max of the data for easy centering
+  data_shape <- sf::st_bbox(data)
+
+  data %>%
+    transpose_data(x_add =-as.integer(data_shape["xmin"] + data_shape["xmax"])/2 ,
+                   y_add = -as.integer(data_shape["ymin"] + data_shape["ymax"])/2)
+
+  # crop until vertices - 4
+}
+
+
+
 #' transpose boundary box
 #'
 #' Centers the bbox at (0,0) for easy rotation cropping.
@@ -18,6 +55,7 @@ transpose_bbox <- function(original_bbox) {
 }
 
 
+
 #' Crop and rotate data
 #'
 #' Function which is looped
@@ -32,6 +70,8 @@ crop_and_rotate <- function(data,bbox,angle) {
     rotate_data(rotate_angle=angle)%>%
     sf::st_crop(bbox)
 }
+
+
 
 
 #' Crop sf as circle
@@ -74,6 +114,7 @@ crop_circle <- function(data,original_bbox, angle=pi/6) {
     transpose_data(x_add = ((xmin+xmax)/2), y_add = ((ymin+ymax)/2))
 
 }
+
 
 
 #' Create a shape which matches the boundary.

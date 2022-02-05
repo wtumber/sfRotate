@@ -1,3 +1,17 @@
+#' Geometry to points
+#'
+#' Converts sf geometry to a data frame.
+#' Wrapper of the sf::st_coordinates function.
+#'
+#' @param data
+#'
+#' @return data.frame
+#' @export
+geometry_to_points <- function(data) {
+  data.frame(sf::st_coordinates(data))
+}
+
+
 #' Convert geometry points to lines
 #'
 #' Convert points in a geometry object to lines
