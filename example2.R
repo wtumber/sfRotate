@@ -1,6 +1,7 @@
 library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(ggplot2)
 
 # Required to enable st_crop validity
 sf::sf_use_s2(FALSE)
@@ -11,7 +12,7 @@ angle_to_tilt <- pi/4
 world <- ne_countries(scale="medium",returnclass="sf")
 
 # Create boundary box
-box_shape <- create_boundary_shape(vertices = 24,radius = 50,transpose = c(25,25))
+box_shape <- create_boundary_shape(vertices = 24,radius = 20,transpose = c(25,25))
 boundary <- st_bbox(box_shape)
 
 data <- crop_circle(world,boundary,angle=(pi/12)) %>%
