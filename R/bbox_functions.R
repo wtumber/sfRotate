@@ -21,16 +21,22 @@ crop_sf <- function(data, n_vertices=4,bbox) {
 
   n_vertices <- as.integer(n_vertices)
 
+
+  # convert boundary shape to bbox - finds the max and min for each axis
   boundary <- sf::st_bbox(bbox)
 
-  # find xmin,max,ymin,max of the data for easy centering
+  # find the radius as half distance xmax-xmin for boundary box
+  radius <- as.integer
+  # find min and max of the data for easy centering
   data_shape <- sf::st_bbox(data)
 
-  data %>%
+  # center the data ready for rotations
+  data <-  data %>%
     transpose_data(x_add =-as.integer(data_shape["xmin"] + data_shape["xmax"])/2 ,
                    y_add = -as.integer(data_shape["ymin"] + data_shape["ymax"])/2)
 
   # crop until vertices - 4
+
 }
 
 

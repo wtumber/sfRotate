@@ -26,7 +26,7 @@ outline <-box_shape %>%
 # Plot
 ggplot2::ggplot(data=data) +
   ggplot2::geom_sf(data = outline,fill="lightblue")+
-  ggplot2::geom_sf(fill="lightgreen",colour="black") +
+  ggplot2::geom_sf(fill="lightgreen",colour="black") #+
   ggplot2::theme(axis.title=ggplot2::element_blank(),
                  axis.ticks =ggplot2::element_blank() ,
                  axis.text =ggplot2::element_blank() ,
