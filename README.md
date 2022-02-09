@@ -12,7 +12,7 @@ devtools::install_github("wtumber/sfRotate")
 
 ### Example outputs
 This is a combined example output using the functions from this packages. The map data is provided as an sf geometry object from the `rnaturalearth` package.
-<img src="example3.PNG" width="300"> 
+<img src="vignettes/example3.PNG" width="300"> 
 
 ### Future development
 *Create a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) where matrix transformations can be represented in a shiny app.
