@@ -8,11 +8,12 @@ sf::sf_use_s2(FALSE)
 world <- ne_countries(scale="medium",returnclass="sf")
 
 # Create boundary box polygon for plot
-box_shape <- create_boundary_shape(vertices = 16, radius = 30)
+box_shape <- create_boundary_shape(vertices = 32, radius = 30)
 
+create_boundary_shape(vertices = 4, radius = 30)
 
 # Crop map into 12 vertex shape
-data <- crop_sf(world,16,radius= 30,crop_center = c(-20,60))
+data <- crop_sf(world,32,radius= 30,crop_center = c(0,40))
 
 
 ggplot2::ggplot(data) +

@@ -23,9 +23,8 @@ crop_sf <- function(data, n_vertices=4,radius = 10, crop_center=c(0,0)) {
   n_rot <- ceiling(n_vertices/4)
   rot_angle <- (pi/2)/n_rot
 
-  bbox <- create_boundary_shape(vertices = 4,radius = sqrt(2*(radius^2))) %>%
+  bbox <- create_boundary_shape(vertices = 4,radius = radius) %>%
     sf::st_bbox()
-
 
   # find min and max of the data for easy centering
   data_shape <- sf::st_bbox(data)
@@ -44,6 +43,22 @@ crop_sf <- function(data, n_vertices=4,radius = 10, crop_center=c(0,0)) {
 
   data2 %>%
     rotate_data(rotate_angle = -(pi/2))
+}
+
+
+#' Crop and rotate data
+#'
+#' Function which is looped
+#'
+#' @param data
+#' @param bbox
+#' @param angle
+#'
+#' @return
+crop_and_rotate <- function(data,bbox,angle) {
+  data %>%
+    rotate_data(rotate_angle=angle)%>%
+    sf::st_crop(bbox)
 }
 
 
@@ -69,20 +84,7 @@ transpose_bbox <- function(original_bbox) {
 
 
 
-#' Crop and rotate data
-#'
-#' Function which is looped
-#'
-#' @param data
-#' @param bbox
-#' @param angle
-#'
-#' @return
-crop_and_rotate <- function(data,bbox,angle) {
-  data %>%
-    rotate_data(rotate_angle=angle)%>%
-    sf::st_crop(bbox)
-}
+
 
 
 
@@ -146,9 +148,11 @@ create_boundary_shape <- function(vertices = 24,radius = 1,transpose = c(0,0)){
 
   point_angle <- rotation_per_point * 1:vertices
 
-  message(paste("If you are creating a square you might have wanted radius :\t",sqrt(2*(radius^2))))
-  data.frame(x = radius * cos(point_angle),
-             y = radius * sin(point_angle)) %>%
+  calculated_radius <- radius / sin(pi/2 - pi/vertices)
+
+ #message(paste("If you are creating a square you might have wanted radius :\t",sqrt(2*(radius^2))))
+  data.frame(x = calculated_radius * cos(point_angle),
+             y = calculated_radius * sin(point_angle)) %>%
     sf::st_as_sf(coords=c("x","y"))%>%
     rotate_data(rotate_angle = rotation_per_point/2)%>%
     transpose_data(x_add = transpose[1], y_add = transpose[2]) %>%
