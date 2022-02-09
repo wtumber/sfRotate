@@ -83,55 +83,6 @@ transpose_bbox <- function(original_bbox) {
 }
 
 
-
-
-
-
-
-
-#' Crop sf as circle
-#'
-#' Crop an sf object to a circular shape (or any shape with
-#' even sides).
-#'
-#' @param data
-#' @param original_bbox
-#' @param angle
-#'
-#' @return
-#' @export
-crop_circle <- function(data,original_bbox, angle=pi/6) {
-
-  xmin <- as.integer(original_bbox[1])
-  xmax<- as.integer(original_bbox[3])
-  ymin<- as.integer(original_bbox[2])
-  ymax<- as.integer(original_bbox[4])
-
-  n_rot <- ceiling((pi/2) / (angle))
-
-  data <- data %>%
-    sf::st_crop(original_bbox) %>% # Next transpose so that center is 0,0
-    transpose_data(x_add = -((xmin+xmax)/2),
-                   y_add = -((ymin+ymax)/2))
-    #dplyr::mutate(geometry = .$geometry + c(-((xmin+xmax)/2),-((ymin+ymax)/2)))
-
-  new_bbox <- transpose_bbox(original_bbox)
-
-  data2 <- data
-
-  for (i in 1:n_rot) {
-    data2 <- crop_and_rotate(data2,new_bbox,angle)
-
-  }
-
-  data2 %>%
-    rotate_data(rotate_angle = -(pi/2)) %>%
-    transpose_data(x_add = ((xmin+xmax)/2), y_add = ((ymin+ymax)/2))
-
-}
-
-
-
 #' Create a shape which matches the boundary.
 #'
 #' Create an sf Polygon of any regular shape.
