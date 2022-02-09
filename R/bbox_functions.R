@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-crop_sf <- function(data, n_vertices=4,bbox) {
+crop_sf <- function(data, n_vertices=4,radius = 10, crop_center=c(0,0)) {
 
   if (n_vertices %% 4){
     stop("n_vertices must be a multiple of 4.")
@@ -20,23 +20,30 @@ crop_sf <- function(data, n_vertices=4,bbox) {
   }
 
   n_vertices <- as.integer(n_vertices)
+  n_rot <- ceiling(n_vertices/4)
+  rot_angle <- (pi/2)/n_rot
+
+  bbox <- create_boundary_shape(vertices = 4,radius = sqrt(2*(radius^2))) %>%
+    sf::st_bbox()
 
 
-  # convert boundary shape to bbox - finds the max and min for each axis
-  boundary <- sf::st_bbox(bbox)
-
-  # find the radius as half distance xmax-xmin for boundary box
-  radius <- as.integer
   # find min and max of the data for easy centering
   data_shape <- sf::st_bbox(data)
 
   # center the data ready for rotations
-  data <-  data %>%
+  data2 <- data %>%
     transpose_data(x_add =-as.integer(data_shape["xmin"] + data_shape["xmax"])/2 ,
-                   y_add = -as.integer(data_shape["ymin"] + data_shape["ymax"])/2)
+                   y_add = -as.integer(data_shape["ymin"] + data_shape["ymax"])/2)%>%
+    # center again based on the user input center
+    transpose_data(x_add = -crop_center[1] ,
+                   y_add = -crop_center[2])
 
-  # crop until vertices - 4
+  for (i in 1:n_rot) {
+    data2 <- crop_and_rotate(data2,bbox,rot_angle)
+  }
 
+  data2 %>%
+    rotate_data(rotate_angle = -(pi/2))
 }
 
 
@@ -145,7 +152,7 @@ create_boundary_shape <- function(vertices = 24,radius = 1,transpose = c(0,0)){
     sf::st_as_sf(coords=c("x","y"))%>%
     rotate_data(rotate_angle = rotation_per_point/2)%>%
     transpose_data(x_add = transpose[1], y_add = transpose[2]) %>%
-    dplyr::summarise(geometry=st_combine(geometry)) %>%
+    dplyr::summarise(geometry=sf::st_combine(geometry)) %>%
     sf::st_cast("POLYGON")
 
 }
