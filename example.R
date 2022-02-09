@@ -10,10 +10,8 @@ angle_to_tilt <- pi/4
 # import data
 world <- ne_countries(scale="medium",returnclass="sf")
 
-# Create boundary box
-box_shape <- create_boundary_shape(vertices = 4, radius = 50, transpose = c(50,55))
-
-boundary <- st_bbox(box_shape)
+# Create boundary box shape
+box_shape <- create_boundary_shape(vertices = 32, radius = 30)
 
 outline <- box_shape %>%
   st_cast("POINT") %>% # cast to point before making any changes
@@ -22,28 +20,40 @@ outline <- box_shape %>%
   dplyr::summarise(geometry=st_combine(geometry)) %>%
   st_cast("POLYGON")
 
-# Cut world map using boundary box
 data <- world %>%
-  st_crop(boundary)%>%
-  shear_data(shear_angle=angle_to_tilt) %>%
-  rotate_data(rotate_angle=angle_to_tilt/2)%>%
-  transpose_data(y_add = 0)
-
-data2 <- world %>%
-  crop_circle(boundary,angle=(pi/12))%>%
+  crop_sf(n_vertices = 32,radius= 30,crop_center = c(0,40))%>%
   shear_data(shear_angle=angle_to_tilt)%>%
   rotate_data(rotate_angle=angle_to_tilt/2)%>%
-  transpose_data(y_add = 0)
+  transpose_data(y_add = -15)
 
-ggplot2::ggplot(data2) +
-  ggplot2::geom_sf()
+background_data <- world %>%
+  crop_sf(n_vertices = 4,radius= 30,crop_center = c(0,40))%>%
+  transpose_data(x_add = 70)
 
+box2_shape <- create_boundary_shape(vertices = 4, radius = 20)
+
+outline2 <- box2_shape %>%
+  st_cast("POINT") %>% # cast to point before making any changes
+  shear_data(shear_angle=angle_to_tilt) %>%
+  rotate_data(rotate_angle=0) %>%
+  dplyr::summarise(geometry=st_combine(geometry)) %>%
+  st_cast("POLYGON")
+
+data2 <- world %>%
+  crop_sf(n_vertices = 4,radius= 20,crop_center = c(0,40))%>%
+  shear_data(shear_angle=angle_to_tilt)%>%
+  rotate_data(rotate_angle=0)%>%
+  transpose_data(y_add = 20)
 
 # Plot
 ggplot2::ggplot(data=data) +
-  ggplot2::geom_sf(data = outline,fill="lightblue")+
+  ggplot2::geom_sf(data = background_data,fill="grey", alpha = 0.4)+
+  ggplot2::geom_sf(data = outline%>%
+                     transpose_data(y_add = -15),fill="lightblue") +
+  ggplot2::geom_sf(data = outline2%>%
+                     transpose_data(y_add = 20),fill="lightblue") +
+  ggplot2::geom_sf(data=data2,fill="lightgreen",colour="black") +
   ggplot2::geom_sf(fill="lightgreen",colour="black") +
-  ggplot2::geom_sf(data=data2,fill="grey",colour="black",alpha=0.6) +
   ggplot2::theme(axis.title=ggplot2::element_blank(),
                  axis.ticks =ggplot2::element_blank() ,
                  axis.text =ggplot2::element_blank() ,
