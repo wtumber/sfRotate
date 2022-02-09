@@ -7,10 +7,12 @@
 shear_data(data, shear_angle = pi/4)
 }
 \arguments{
-\item{shear_angle}{}
+\item{data}{sf geometry data.}
+
+\item{shear_angle}{Shear angle, in Radians.}
 }
 \value{
-
+sf geometry data.
 }
 \description{
 Shear data using the shear angle defined.

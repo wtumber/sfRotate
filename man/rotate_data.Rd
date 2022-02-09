@@ -7,13 +7,14 @@
 rotate_data(data, rotate_angle = pi/4)
 }
 \arguments{
-\item{rotate_angle}{}
+\item{data}{sf geometry data.}
+
+\item{rotate_angle}{Angle of rotation, in Radians.}
 }
 \value{
-
+sf geometry data.
 }
 \description{
 Rotate sf data by the angle defined. You will likely want to
-use a value half that of the shear angle if they are used in
-conjunction.
+use a value half that of the shear angle.
 }

@@ -1,11 +1,11 @@
 #' Geometry to points
 #'
-#' Converts sf geometry to a data frame.
+#' Converts sf geometry to a data.frame.
 #' Wrapper of the sf::st_coordinates function.
 #'
-#' @param data
+#' @param data sf geometry data.
 #'
-#' @return data.frame
+#' @return A data.frame.
 #' @export
 geometry_to_points <- function(data) {
   data.frame(sf::st_coordinates(data))
@@ -17,11 +17,11 @@ geometry_to_points <- function(data) {
 #' Convert points in a geometry object to lines
 #' accessible by ggplot2::geom_line.
 #'
-#' @param data
-#' @param x_add
-#' @param y_add
+#' @param data sf geometry data.
+#' @param x_add x value to extend the line by.
+#' @param y_add y value to extend the line by.
 #'
-#' @return data.frame
+#' @return A data.frame.
 #' @export
 geometry_to_lines <- function(data,x_add=0,y_add=0) {
 

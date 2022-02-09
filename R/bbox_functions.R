@@ -1,16 +1,18 @@
 
 #' Crop sf
 #'
-#' crop an sf geometry object to a desired shape.
+#' Crop an sf geometry object to a desired 4-sided shape. The shape is
+#' defined by a radius and a number of vertices. The radius is the distance
+#' from the center to the tangent point of each face. The crop center is
+#' the central point of the sf geometry point to crop round.
 #'
-#' @param data
-#' @param n_vertices
-#' @param bbox a POLYGON from create_boundary_shape.
+#' @param data sf geometry data.
+#' @param radius Radius of sf geometry crop.
+#' @param crop_center Central point of sf crop.
+#' @param n_vertices Number of vertices crop will have.
 #'
-#' @return
+#' @return sf geometry data.
 #' @export
-#'
-#' @examples
 crop_sf <- function(data, n_vertices=4,radius = 10, crop_center=c(0,0)) {
 
   if (n_vertices %% 4){
@@ -46,54 +48,16 @@ crop_sf <- function(data, n_vertices=4,radius = 10, crop_center=c(0,0)) {
 }
 
 
-#' Crop and rotate data
-#'
-#' Function which is looped
-#'
-#' @param data
-#' @param bbox
-#' @param angle
-#'
-#' @return
-crop_and_rotate <- function(data,bbox,angle) {
-  data %>%
-    rotate_data(rotate_angle=angle)%>%
-    sf::st_crop(bbox)
-}
-
-
-
-#' transpose boundary box
-#'
-#' Centers the bbox at (0,0) for easy rotation cropping.
-#'
-#' @param bbox
-#'
-#' @return
-transpose_bbox <- function(original_bbox) {
-  xmin <- as.integer(original_bbox[1])
-  xmax<- as.integer(original_bbox[3])
-  ymin<- as.integer(original_bbox[2])
-  ymax<- as.integer(original_bbox[4])
-
-  sf::st_bbox(c(xmin=-((xmax - xmin)/2),
-                ymin = -((ymax - ymin)/2),
-                xmax=((xmax - xmin)/2),
-                ymax=((ymax - ymin)/2)))
-}
-
-
-#' Create a shape which matches the boundary.
+#' Create an sf polygon.
 #'
 #' Create an sf Polygon of any regular shape.
 #'
-#' @param vertices Number of vertices.
-#' @param radius distance from center to each vertex.
-#' @param transpose (X, Y) distance to transpose by.
+#' @param vertices Number of vertices on shape.
+#' @param radius Distance from center to each tangent point.
 #'
 #' @return sf POLYGON
 #' @export
-create_boundary_shape <- function(vertices = 24,radius = 1,transpose = c(0,0)){
+create_boundary_shape <- function(vertices = 24,radius = 1){
 
   rotation_per_point <- 2*pi/vertices
 
@@ -101,13 +65,28 @@ create_boundary_shape <- function(vertices = 24,radius = 1,transpose = c(0,0)){
 
   calculated_radius <- radius / sin(pi/2 - pi/vertices)
 
- #message(paste("If you are creating a square you might have wanted radius :\t",sqrt(2*(radius^2))))
   data.frame(x = calculated_radius * cos(point_angle),
              y = calculated_radius * sin(point_angle)) %>%
     sf::st_as_sf(coords=c("x","y"))%>%
     rotate_data(rotate_angle = rotation_per_point/2)%>%
-    transpose_data(x_add = transpose[1], y_add = transpose[2]) %>%
     dplyr::summarise(geometry=sf::st_combine(geometry)) %>%
     sf::st_cast("POLYGON")
 
 }
+
+
+#' Crop and rotate data
+#'
+#' Crop sf geometry data using an st::bbox and rotate by angle Radians.
+#'
+#' @param data sf geometry data.
+#' @param bbox An sf::st_bbox-defined object.
+#' @param angle Angle to rotate by, in Radians.
+#'
+#' @return  sf geometry data.
+crop_and_rotate <- function(data,bbox,angle) {
+  data %>%
+    rotate_data(rotate_angle=angle) %>%
+    sf::st_crop(bbox)
+}
+

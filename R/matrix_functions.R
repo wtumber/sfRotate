@@ -2,10 +2,10 @@
 #'
 #' Shear data using the shear angle defined.
 #'
-#' @param data
-#' @param shear_angle
+#' @param data sf geometry data.
+#' @param shear_angle Shear angle, in Radians.
 #'
-#' @return
+#' @return sf geometry data.
 #' @export
 shear_data <- function(data, shear_angle = pi/4) {
 
@@ -21,13 +21,12 @@ shear_data <- function(data, shear_angle = pi/4) {
 #' Rotate data
 #'
 #' Rotate sf data by the angle defined. You will likely want to
-#' use a value half that of the shear angle if they are used in
-#' conjunction.
+#' use a value half that of the shear angle.
 #'
-#' @param data
-#' @param rotate_angle
+#' @param data sf geometry data.
+#' @param rotate_angle Angle of rotation, in Radians.
 #'
-#' @return
+#' @return sf geometry data.
 #' @export
 rotate_data <- function(data,rotate_angle = pi/4) {
 
@@ -39,15 +38,16 @@ rotate_data <- function(data,rotate_angle = pi/4) {
     )
 }
 
+
 #' Transpose data
 #'
 #' Transpose an sf object by (x_add, y_add).
 #'
-#' @param data
-#' @param x_add
-#' @param y_add
+#' @param data sf geometry data.
+#' @param x_add Value to transpose data by, on the x-axis.
+#' @param y_add Value to transpose data by, on the y-axis.
 #'
-#' @return
+#' @return sf geometry data.
 #' @export
 transpose_data <- function(data,x_add=0, y_add=0) {
   data %>%
@@ -55,4 +55,3 @@ transpose_data <- function(data,x_add=0, y_add=0) {
       geometry = .$geometry + c(x_add,y_add)
     )
 }
-

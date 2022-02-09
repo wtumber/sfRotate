@@ -7,10 +7,14 @@
 geometry_to_lines(data, x_add = 0, y_add = 0)
 }
 \arguments{
-\item{y_add}{}
+\item{data}{sf geometry data.}
+
+\item{x_add}{x value to extend the line by.}
+
+\item{y_add}{y value to extend the line by.}
 }
 \value{
-data.frame
+A data.frame.
 }
 \description{
 Convert points in a geometry object to lines

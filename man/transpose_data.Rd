@@ -7,10 +7,14 @@
 transpose_data(data, x_add = 0, y_add = 0)
 }
 \arguments{
-\item{y_add}{}
+\item{data}{sf geometry data.}
+
+\item{x_add}{Value to transpose data by, on the x-axis.}
+
+\item{y_add}{Value to transpose data by, on the y-axis.}
 }
 \value{
-
+sf geometry data.
 }
 \description{
 Transpose an sf object by (x_add, y_add).
