@@ -5,7 +5,7 @@ Authors@R:
     person(given = "Will",
            family = "Tumber",
            role = c("aut", "cre"),
-           email = "",
+           email = "will@tumber.co.uk",
            comment = c(ORCID = ""))
 Description: Collection of functions to shape sf objects using matrix 
   transformations and bounding boxes.
@@ -15,8 +15,9 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports:
-  sf (>= 1.0.4),
-	dplyr (>= 1.0.7)
+    sf (>= 1.0.4),
+    dplyr (>= 1.0.7),
+    magrittr
 Suggests: 
     rmarkdown,
     knitr

@@ -17,56 +17,59 @@ knitr::opts_chunk$set(
 Here we also set sf_use_s2 to false, which is required to enable `sf::st_crop()`.
 ```{r}
 library(sfRotate)
-#library(sf)
-#library(rnaturalearth)
-#library(rnaturalearthdata)
 
 sf::sf_use_s2(FALSE)
 ```
- 
-We use this angle when shearing and rotating the data to output the desired shape. This value does not have to be the same for each function, but the output shape will not be a diamond.
-```{r}
-angle_to_tilt <- pi/4
-```
-We import an sf object from `rnaturalearth`.
+### Import data from `rnaturalearth`.
 ```{r}
 # import data
 world <- rnaturalearth::ne_countries(scale="medium",returnclass="sf")
+
+# Define an angle to use in matrix transformations.
+angle_to_tilt <- pi/4
+``` 
+
+### Transforming data
+We can use `crop_sf` to crop the data to an 8-sided shape with radius 40. We can center this crop around the point (0,30), and shear using the tilt angle. To line up the shear nicely, we can rotate using the half of the tilt angle. If we wanted to, we could also transpose the data vertically by 10, to raise it above any outline we define.
+
+``` {r}
+data <- world %>%
+  crop_sf(n_vertices = 8,radius= 40,crop_center = c(0,30))%>%
+  shear_data(shear_angle=angle_to_tilt)%>%
+  rotate_data(rotate_angle=angle_to_tilt/2)#%>%
+  #transpose_data(y_add = 10)
 ```
-### Creating the bboundary box
-We use `create_boundary_shape` to create the boundary box. This function will return with the message:
 
-> If you are creatinga square you might have wanted radius :  
-> 70.7106781186548 
-
-This is because the radius defines the distance to the square vertex, which is not actually the minimum length in the square.
-
-We can convert this shape to a standard `st_bbox` to crop the sf layer. To make mutations to the box shape we must cast it to type `"POINT"`, then summarise and recast as a `"POLYGON"`.
+### Create an outline shape
 ```{r}
-box_shape <- create_boundary_shape(vertices = 4, radius = 50, transpose = c(0,50))
-
-boundary <- sf::st_bbox(box_shape)
-
+box_shape <- create_boundary_shape(vertices = 8, radius = 40)
+```
+If you want to transform this box shape, `sf` requires that you first cast it to geometry type `POINT`. We will recast after transformations.
+``` {r}
 outline <- box_shape %>%
-  sf::st_cast("POINT") %>% # cast to point before making any changes
+  sf::st_cast("POINT") %>%
+  # cast to point before making any changes
   shear_data(shear_angle=angle_to_tilt) %>%
   rotate_data(rotate_angle=angle_to_tilt/2) %>%
-  dplyr::summarise(geometry=st_combine(geometry)) %>%
+  dplyr::summarise(geometry=sf::st_combine(geometry)) %>%
   sf::st_cast("POLYGON")
 ```
 
+### Plotting
+We can plot this using `ggplot2`.
 ``` {r}
-# Cut world map using boundary box
-data <- world %>%
-  sf::st_crop(boundary)%>%
-  shear_data(shear_angle=angle_to_tilt) %>%
-  rotate_data(rotate_angle=angle_to_tilt/2)%>%
-  transpose_data(y_add = 2)
-
-data2 <- world %>%
-  crop_circle(boundary,angle=(pi/24))%>%
-  shear_data(shear_angle=angle_to_tilt)
+ggplot2::ggplot(data=data) +
+  ggplot2::geom_sf(data = outline,fill="lightblue") +
+  ggplot2::geom_sf(fill="lightgreen",colour="black") +
+  # Below this is all styling
+  ggplot2::theme(axis.title=ggplot2::element_blank(),
+                 axis.ticks =ggplot2::element_blank() ,
+                 axis.text =ggplot2::element_blank() ,
+                 plot.background =ggplot2::element_blank(),
+                 panel.background = ggplot2::element_blank()
+                 )
 ```
+
 
 
 
