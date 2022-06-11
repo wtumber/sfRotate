@@ -16,4 +16,4 @@ This is a combined example output using the functions from this packages. The ma
 <img src="vignettes/example3.PNG" width="300"> 
 
 ### Future development
-*Create a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) where matrix transformations can be represented in a shiny app.
+* Create a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) where matrix transformations can be represented in a shiny app.
